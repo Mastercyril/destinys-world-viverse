@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destiny's World - Lost Society in Time</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r155/three.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <h1>Destiny's World</h1>
+            <h2>Lost Society in Time</h2>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loading-progress"></div>
+            </div>
+            <p>Initializing VIVERSE...</p>
+        </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- HUD Elements -->
+    <div id="hud">
+        <div id="health-bar" class="hud-element">
+            <div>Health</div>
+            <div class="bar">
+                <div class="bar-fill" id="health-fill"></div>
+            </div>
+        </div>
+
+        <div id="fragment-counter" class="hud-element">
+            <span>Fragments: <strong id="fragment-count">0</strong>/8</span>
+        </div>
+
+        <div id="zone-indicator" class="hud-element">
+            <span id="zone-name">Zone 1: Modern District</span>
+        </div>
+
+        <div id="interaction-prompt" style="display:none;">
+            Press <kbd>E</kbd> to interact
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" style="display:none;">
+        <h2>Paused</h2>
+        <button onclick="resumeGame()">Resume</button>
+        <button onclick="location.reload()">Restart</button>
+    </div>
+
+    <!-- Journal/Inventory -->
+    <div id="journal" style="display:none;">
+        <h2>Investigation Journal</h2>
+        <div id="journal-content"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
