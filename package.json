@@ -1,0 +1,27 @@
+{
+  "name": "destinys-world-viverse",
+  "version": "1.0.0",
+  "description": "Destiny's World - Lost Society in Time. A 3D investigation game for VIVERSE",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.155.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "game",
+    "viverse",
+    "webxr",
+    "three.js",
+    "investigation"
+  ],
+  "author": "Joseph Cyril Dougherty IV - 13th Chamber LLC",
+  "license": "MIT"
+}
