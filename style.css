@@ -1,0 +1,274 @@
+/* Destiny's World - Dark Fantasy Theme CSS */
+/* Based on comprehensive VIVERSE Game Development Guide */
+
+:root {
+  /* Color Palette - Dark Fantasy */
+  --color-bg-dark: #0a0a0f;
+  --color-bg-panel: #1a1a2e;
+  --color-primary: #7c3aed;
+  --color-primary-dark: #6d28d9;
+  --color-secondary: #ec4899;
+  --color-accent: #10b981;
+  --color-danger: #ef4444;
+  --color-text: #e5e7eb;
+  --color-text-dim: #9ca3af;
+  --color-void: #1e0a3c;
+  --color-corruption: #4a0e0e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--color-bg-dark);
+  color: var(--color-text);
+  overflow: hidden;
+  line-height: 1.6;
+}
+
+/* Loading Screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f172a, #1e1b4b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content h1 {
+  font-size: 3rem;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+.loading-content h2 {
+  font-size: 1.5rem;
+  color: var(--color-text-dim);
+  margin-bottom: 2rem;
+}
+
+.loading-bar {
+  width: 300px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 2rem auto;
+}
+
+.loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  width: 0;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* Game Canvas */
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100vh;
+}
+
+/* HUD Elements */
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.hud-element {
+  position: absolute;
+  background: rgba(26, 26, 46, 0.85);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#health-bar {
+  top: 20px;
+  left: 20px;
+}
+
+#fragment-counter {
+  top: 20px;
+  right: 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+#zone-indicator {
+  bottom: 20px;
+  left: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+#interaction-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(26, 26, 46, 0.95);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  border: 2px solid var(--color-primary);
+  font-size: 1.1rem;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+kbd {
+  background: var(--color-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Health & Progress Bars */
+.bar {
+  width: 150px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  width: 100%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+/* Pause Menu */
+#pause-menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(26, 26, 46, 0.95);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  min-width: 300px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+#pause-menu h2 {
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  text-align: center;
+  font-size: 2rem;
+}
+
+#pause-menu button {
+  display: block;
+  width: 200px;
+  margin: 0.75rem auto;
+  padding: 0.75rem;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#pause-menu button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+}
+
+/* Journal/Inventory */
+#journal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(26, 26, 46, 0.95);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  min-width: 400px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+#journal h2 {
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hud-element {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .loading-content h1 {
+    font-size: 2rem;
+  }
+  
+  #journal {
+    min-width: 90%;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(124, 58, 237, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.8); }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.glow {
+  animation: glow 2s ease-in-out infinite;
+}
