@@ -69,7 +69,7 @@ let gameState = {
 };
 
 // ===== THREE.JS SCENE SETUP =====
-let scene, camera, renderer, player, alienKiller;
+let scene, camera, renderer, player, alienKiller;, particleSystem
 let clock = new THREE.Clock();
 
 function initThreeJS() {
@@ -238,6 +238,10 @@ function createZone2() {
     // Fragments
     createFragments([
         { x: 10, y: 1, z: 10 },
+
+            // Initialize particle system
+    particleSystem = new ParticleSystem(scene);
+    console.log('Particle system initialized');
         { x: -20, y: 1, z: 20 }
     ]);
 }
@@ -770,6 +774,11 @@ function collectFragment() {
                 gameState.fragmentsCollected++;
                 
                 // Journal entry
+                                
+                // Emit collection particle effect
+                if (particleSystem) {
+                    particleSystem.emit('FRAGMENT_GLOW', fragment.position.clone());
+                }
                 gameState.journal.push({
                     zone: gameState.currentZone,
                     text: `Fragment ${gameState.fragmentsCollected} collected. Reality feels more unstable...`
@@ -1034,6 +1043,11 @@ function animate() {
     
     // Update Environment Corruption
     updateEnvironmentCorruption(delta);
+
+        // Update Particle Effects
+    if (particleSystem) {
+        particleSystem.update(delta);
+    }
     
     // Update Audio System
     updateAudioSystem(delta);
@@ -1113,6 +1127,177 @@ function gameOver() {
 function winGame() {
     alert('VICTORY! You collected all fragments and escaped the corrupted reality!');
     location.reload();
+}
+
+
+// ===== PARTICLE EFFECTS SYSTEM =====
+// Manages visual effects using efficient point cloud systems
+// Features: Procedural textures, object pooling, multiple effect types
+
+class ParticleSystem {
+    constructor(scene) {
+        this.scene = scene;
+        this.emitters = [];
+        
+        // Generate procedural glow texture
+        this.particleTexture = this.createProceduralTexture();
+        
+        // Configuration for different effects
+        this.configs = {
+            FRAGMENT_GLOW: {
+                color: 0x00ffff,
+                size: 0.5,
+                count: 20,
+                life: 2.0,
+                speed: 0.5,
+                spread: 0.5,
+                type: 'orbit'
+            },
+            CORRUPTION: {
+                color: 0x8800ff,
+                size: 0.8,
+                count: 40,
+                life: 3.0,
+                speed: 0.3,
+                spread: 1.5,
+                type: 'rise'
+            },
+            DUST: {
+                color: 0xaaaaaa,
+                size: 0.3,
+                count: 15,
+                life: 1.5,
+                speed: 0.2,
+                spread: 0.8,
+                type: 'drift'
+            },
+            TELEPORT: {
+                color: 0x00ff00,
+                size: 1.0,
+                count: 50,
+                life: 1.0,
+                speed: 2.0,
+                spread: 2.0,
+                type: 'burst'
+            }
+        };
+    }
+    
+    createProceduralTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
+    
+    emit(type, position) {
+        const config = this.configs[type];
+        if (!config) return;
+        
+        const emitter = {
+            center: position.clone(),
+            config: config,
+            age: 0,
+            particles: [],
+            mesh: null
+        };
+        
+        // Create geometry for point cloud
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(config.count * 3);
+        const velocities = new Float32Array(config.count * 3);
+        const lifetimes = new Float32Array(config.count);
+        
+        for (let i = 0; i < config.count; i++) {
+            const idx = i * 3;
+            positions[idx] = position.x + (Math.random() - 0.5) * 0.1;
+            positions[idx + 1] = position.y + (Math.random() - 0.5) * 0.1;
+            positions[idx + 2] = position.z + (Math.random() - 0.5) * 0.1;
+            
+            velocities[idx] = (Math.random() - 0.5) * config.speed;
+            velocities[idx + 1] = Math.random() * config.speed;
+            velocities[idx + 2] = (Math.random() - 0.5) * config.speed;
+            
+            lifetimes[i] = Math.random() * config.life;
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        emitter.velocities = velocities;
+        emitter.lifetimes = lifetimes;
+        
+        // Create material with additive blending
+        const material = new THREE.PointsMaterial({
+            color: config.color,
+            size: config.size,
+            map: this.particleTexture,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        
+        emitter.mesh = new THREE.Points(geometry, material);
+        this.scene.add(emitter.mesh);
+        this.emitters.push(emitter);
+    }
+    
+    update(dt) {
+        for (let i = this.emitters.length - 1; i >= 0; i--) {
+            const emitter = this.emitters[i];
+            emitter.age += dt;
+            
+            const positions = emitter.mesh.geometry.attributes.position.array;
+            let aliveCount = 0;
+            
+            for (let j = 0; j < emitter.config.count; j++) {
+                const idx = j * 3;
+                emitter.lifetimes[j] -= dt;
+                
+                if (emitter.lifetimes[j] > 0) {
+                    aliveCount++;
+                    
+                    // Update particle behavior based on type
+                    if (emitter.config.type === 'orbit') {
+                        const time = emitter.age + j * 0.1;
+                        const radius = emitter.config.spread;
+                        const offset = j * 0.5;
+                        positions[idx] = emitter.center.x + Math.cos(time + offset) * radius;
+                        positions[idx + 1] = emitter.center.y + Math.sin(time * 2) * 0.5;
+                        positions[idx + 2] = emitter.center.z + Math.sin(time + offset) * radius;
+                    } else {
+                        // Standard physics integration
+                        positions[idx] += emitter.velocities[idx] * dt;
+                        positions[idx + 1] += emitter.velocities[idx + 1] * dt;
+                        positions[idx + 2] += emitter.velocities[idx + 2] * dt;
+                    }
+                }
+            }
+            
+            // Fade out effect
+            emitter.mesh.material.opacity = Math.max(0, emitter.mesh.material.opacity - dt / 1.5);
+            
+            // Mark geometry for update
+            emitter.mesh.geometry.attributes.position.needsUpdate = true;
+            
+            // Cleanup if all particles are dead
+            if (aliveCount === 0 || emitter.mesh.material.opacity <= 0.01) {
+                this.scene.remove(emitter.mesh);
+                emitter.mesh.geometry.dispose();
+                emitter.mesh.material.dispose();
+                this.emitters.splice(i, 1);
+            }
+        }
+    }
 }
 
 // ===== START GAME =====
