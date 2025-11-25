@@ -1300,6 +1300,117 @@ class ParticleSystem {
     }
 }
 
+// ===== LIGHTING VOLUME SYSTEM =====
+// Dynamic lighting that responds to corruption levels and time of day
+// Features: Day/night cycle, corruption-based color shifts, flickering lights
+
+class LightingVolumeSystem {
+    constructor(scene) {
+        this.scene = scene;
+        this.time = 0;
+        this.cycleSpeed = 0.01; // How fast day/night cycles
+        this.corruptionLevel = 0;
+        
+        // Ambient light
+        this.ambientLight = new THREE.AmbientLight(0xffd1a3, 0.8);
+        scene.add(this.ambientLight);
+        
+        // Directional sun light
+        this.sunLight = new THREE.DirectionalLight(0xffeebb, 1.2);
+        this.sunLight.position.set(5, 10, 5);
+        this.sunLight.castShadow = true;
+        scene.add(this.sunLight);
+        
+        // Flickering point lights for corruption
+        this.flickeringLights = [];
+        
+        // Day/night cycle configuration
+        this.dayCycle = {
+            DAWN: { sky: 0xffd1a3, ground: 0x8ba699, sun: 0xffeebb, intensity: 0.8 },
+            NOON: { sky: 0x87ceeb, ground: 0x6b8c42, sun: 0xffffff, intensity: 1.2 },
+            DUSK: { sky: 0xfd5e53, ground: 0x4a3c31, sun: 0xffa07a, intensity: 0.6 },
+            NIGHT: { sky: 0x050510, ground: 0x020205, sun: 0x4b5d8a, intensity: 0.2 }
+        };
+    }
+    
+    addFlickeringLight(position, color = 0xff00ff, baseIntensity = 2) {
+        const light = new THREE.PointLight(color, baseIntensity, 10);
+        light.position.copy(position);
+        light.baseIntensity = baseIntensity;
+        light.speed = Math.random() * 2 + 1;
+        light.offset = Math.random() * Math.PI * 2;
+        this.scene.add(light);
+        this.flickeringLights.push(light);
+        return light;
+    }
+    
+    setCorruption(level) {
+        this.corruptionLevel = Math.max(0, Math.min(1, level));
+    }
+    
+    update(dt) {
+        // Update day/night cycle
+        this.time += dt * this.cycleSpeed;
+        
+        // Determine time of day (0-1 = full cycle)
+        const cyclePos = (this.time % 1);
+        let currentPhase;
+        
+        if (cyclePos < 0.25) {
+            currentPhase = this.interpolatePhase(this.dayCycle.NIGHT, this.dayCycle.DAWN, cyclePos * 4);
+        } else if (cyclePos < 0.5) {
+            currentPhase = this.interpolatePhase(this.dayCycle.DAWN, this.dayCycle.NOON, (cyclePos - 0.25) * 4);
+        } else if (cyclePos < 0.75) {
+            currentPhase = this.interpolatePhase(this.dayCycle.NOON, this.dayCycle.DUSK, (cyclePos - 0.5) * 4);
+        } else {
+            currentPhase = this.interpolatePhase(this.dayCycle.DUSK, this.dayCycle.NIGHT, (cyclePos - 0.75) * 4);
+        }
+        
+        // Apply corruption tint (shift toward purple)
+        const corruptionTint = this.corruptionLevel;
+        const skyColor = this.lerpColor(currentPhase.sky, 0x4400aa, corruptionTint * 0.5);
+        const sunColor = this.lerpColor(currentPhase.sun, 0x8800ff, corruptionTint * 0.3);
+        
+        // Update lights
+        this.scene.fog.color.setHex(skyColor);
+        this.ambientLight.color.setHex(skyColor);
+        this.ambientLight.intensity = currentPhase.intensity * (1 - corruptionTint * 0.3);
+        
+        this.sunLight.color.setHex(sunColor);
+        this.sunLight.intensity = currentPhase.intensity;
+        
+        // Update flickering lights
+        this.flickeringLights.forEach(item => {
+            const noise = Math.sin(this.time * item.speed + item.offset)
+                        * Math.sin(this.time * item.speed * 2 + item.offset);
+            const chaosFactor = 1 + (this.corruptionLevel * 5);
+            const newIntensity = item.baseIntensity + (noise * 0.5 * chaosFactor);
+            
+            // Strobe effect if highly corrupted
+            if (this.corruptionLevel > 0.5 && Math.random() > 0.95) {
+                item.intensity = 0;
+            } else {
+                item.intensity = Math.max(0, newIntensity);
+            }
+        });
+    }
+    
+    interpolatePhase(phase1, phase2, t) {
+        return {
+            sky: this.lerpColor(phase1.sky, phase2.sky, t),
+            ground: this.lerpColor(phase1.ground, phase2.ground, t),
+            sun: this.lerpColor(phase1.sun, phase2.sun, t),
+            intensity: phase1.intensity + (phase2.intensity - phase1.intensity) * t
+        };
+    }
+    
+    lerpColor(color1, color2, t) {
+        const c1 = new THREE.Color(color1);
+        const c2 = new THREE.Color(color2);
+        return c1.lerp(c2, t).getHex();
+    }
+}
+
 // ===== START GAME =====
 window.addEventListener('load', () => {
     initGame();
