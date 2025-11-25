@@ -32,7 +32,40 @@ let gameState = {
     npcs: [],
     fragments: [],
     hidingSpots: [],
-    journal: []
+    journal: [],
+
+    // ===== NEW EXPANSION SYSTEMS =====
+    // Fear Dynamics System
+    sanity: 100,  // 0-100, decreases with fear/horror events
+    fearLevel: 0,  // 0-100, central fear calculation
+    fearModifiers: {
+        proximity: 0,
+        lighting: 0,
+        audio: 0,
+        sanity: 0
+    },
+
+    // Audio System
+    audioState: {
+        masterVolume: 1.0,
+        musicVolume: 0.6,
+        sfxVolume: 0.8,
+        ambienceVolume: 0.7,
+        currentMusic: null,
+        currentAmbience: null
+    },
+
+    // Save System
+    saveData: {
+        checkpoints: [],
+        lastSaveTime: null,
+        currentCheckpoint: 0
+    },
+
+    // Environment Corruption
+    corruptionLevel: 0,  // 0-100, increases with fear
+    visualDistortion: 0,
+    audioDistortion: 0
 };
 
 // ===== THREE.JS SCENE SETUP =====
@@ -892,6 +925,65 @@ function updatePlayerMovement(delta) {
     }
 }
 
+
+// ===== NEW EXPANSION SYSTEM FUNCTIONS =====
+
+// Update Fear Dynamics System
+function updateFearSystem(delta) {
+    // Calculate proximity fear (alien distance)
+    if (alienKiller) {
+        const dist = gameState.playerPosition.distanceTo(alienKiller.mesh.position);
+        gameState.fearModifiers.proximity = Math.max(0, (CONFIG.DETECTION_RANGE - dist) / CONFIG.DETECTION_RANGE * 50);
+    }
+    
+    // Calculate lighting fear (darker = more fear)
+    const avgLightLevel = 0.3; // Simplified, would calc from actual lights
+    gameState.fearModifiers.lighting = (1 - avgLightLevel) * 20;
+    
+    // Sanity affects fear
+    gameState.fearModifiers.sanity = (100 - gameState.sanity) * 0.3;
+    
+    // Calculate total fear level (0-100)
+    gameState.fearLevel = Math.min(100, 
+        gameState.fearModifiers.proximity +
+        gameState.fearModifiers.lighting +
+        gameState.fearModifiers.audio +
+        gameState.fearModifiers.sanity
+    );
+    
+    // Fear affects sanity over time
+    if (gameState.fearLevel > 50) {
+        gameState.sanity = Math.max(0, gameState.sanity - delta * 2);
+    } else if (gameState.fearLevel < 20 && gameState.sanity < 100) {
+        gameState.sanity = Math.min(100, gameState.sanity + delta * 0.5);
+    }
+    
+    // Update corruption based on fear
+    gameState.corruptionLevel = gameState.fearLevel * 0.8;
+}
+
+// Update Environment Corruption
+function updateEnvironmentCorruption(delta) {
+    gameState.visualDistortion = gameState.corruptionLevel / 100;
+    gameState.audioDistortion = gameState.corruptionLevel / 100;
+    
+    // Apply visual effects to camera/scene
+    if (scene && scene.fog) {
+        scene.fog.density = 0.015 + (gameState.visualDistortion * 0.01);
+    }
+}
+
+// Update Audio System
+function updateAudioSystem(delta) {
+    // Adjust music volume based on fear level
+    const targetMusicVolume = 0.3 + (gameState.fearLevel / 100) * 0.4;
+    gameState.audioState.musicVolume = targetMusicVolume;
+    
+    // Add audio distortion at high corruption
+    if (gameState.audioDistortion > 0.7) {
+        gameState.audioState.sfxVolume = 0.8 * (1 - gameState.audioDistortion * 0.3);
+    }
+}
 // ===== GAME LOOP =====
 function animate() {
     requestAnimationFrame(animate);
@@ -905,6 +997,16 @@ function animate() {
     if (alienKiller) {
         alienKiller.update(gameState.playerPosition, delta);
     }
+
+    // ===== UPDATE NEW EXPANSION SYSTEMS =====
+    // Update Fear Dynamics System
+    updateFearSystem(delta);
+    
+    // Update Environment Corruption
+    updateEnvironmentCorruption(delta);
+    
+    // Update Audio System
+    updateAudioSystem(delta);
     
     // Check for fragment collection
     collectFragment();
