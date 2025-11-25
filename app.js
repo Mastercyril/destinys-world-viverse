@@ -984,6 +984,36 @@ function updateAudioSystem(delta) {
         gameState.audioState.sfxVolume = 0.8 * (1 - gameState.audioDistortion * 0.3);
     }
 }
+
+// Update HUD Display
+function updateHUDDisplay() {
+    // Update Fear Meter
+    const fearFill = document.getElementById('fear-fill');
+    if (fearFill) {
+        const fearPercent = Math.min(100, Math.max(0, gameState.fearLevel));
+        fearFill.style.width = fearPercent + '%';
+    }
+    
+    // Update Sanity Meter
+    const sanityFill = document.getElementById('sanity-fill');
+    if (sanityFill) {
+        const sanityPercent = Math.min(100, Math.max(0, gameState.sanity));
+        sanityFill.style.width = sanityPercent + '%';
+    }
+    
+    // Update Fragment Count
+    const fragmentCount = document.getElementById('fragment-count');
+    if (fragmentCount) {
+        fragmentCount.textContent = gameState.fragmentsCollected + '/' + CONFIG.MAX_FRAGMENTS;
+    }
+    
+    // Update Zone Name
+    const zoneName = document.getElementById('zone-name');
+    if (zoneName) {
+        const zoneNames = ['Zone 1: Entry', 'Zone 2: Corruption Spreads', 'Zone 3: Deep Corruption', 'Zone 4: The Heart'];
+        zoneName.textContent = zoneNames[gameState.currentZone - 1] || 'Unknown Zone';
+    }
+}
 // ===== GAME LOOP =====
 function animate() {
     requestAnimationFrame(animate);
@@ -1032,6 +1062,9 @@ function animate() {
     if (gameState.playerFear > 50) {
         scene.fog.density = 0.015 + (gameState.playerFear / 100) * 0.03;
     }
+
+    // Update HUD Display
+    updateHUDDisplay();
     
     renderer.render(scene, camera);
 }
