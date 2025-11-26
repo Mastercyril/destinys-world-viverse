@@ -1,5 +1,6 @@
 // Destiny's World - Lost Society in Time
 // Complete Game Implementation with AI, NPCs, and 4 Zones
+import { WORLD_CONFIG } from './world-config.js';
 // Author: Joseph Cyril Dougherty IV
 
 // ===== GAME CONFIGURATION =====
