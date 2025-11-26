@@ -1411,6 +1411,420 @@ class LightingVolumeSystem {
     }
 }
 
+// ===== ADVANCED ALIEN AI SYSTEM =====
+class AdvancedAlienAI {
+    constructor(scene, player) {
+        this.scene = scene;
+        this.player = player;
+        this.state = 'patrol'; // patrol, investigate, chase, hunt
+        this.position = { x: 0, y: 1, z: 0 };
+        this.velocity = { x: 0, y: 0, z: 0 };
+        this.health = 100;
+        this.detectionRadius = CONFIG.DETECTION_RANGE;
+        this.hearingRadius = CONFIG.HEARING_RANGE;
+        this.memory = [];
+        this.patrolPoints = [];
+        this.currentPatrolIndex = 0;
+        this.lastSeenPlayerPos = null;
+        this.suspicionLevel = 0;
+        this.learningData = {
+            playerHidingSpots: [],
+            playerRoutes: [],
+            playerBehaviorPatterns: []
+        };
+        this.createAI();
+    }
+
+    createAI() {
+        const alienGeometry = new THREE.BoxGeometry(1, 2, 1);
+        const alienMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x00ff00,
+            emissive: 0x00aa00,
+            emissiveIntensity: 0.5
+        });
+        this.mesh = new THREE.Mesh(alienGeometry, alienMaterial);
+        this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.mesh.castShadow = true;
+        this.scene.add(this.mesh);
+    }
+
+    update(deltaTime) {
+        switch(this.state) {
+            case 'patrol':
+                this.patrol(deltaTime);
+                break;
+            case 'investigate':
+                this.investigate(deltaTime);
+                break;
+            case 'chase':
+                this.chase(deltaTime);
+                break;
+            case 'hunt':
+                this.hunt(deltaTime);
+                break;
+        }
+        this.checkPlayerDetection();
+        this.learnFromPlayer();
+        this.updatePosition(deltaTime);
+    }
+
+    patrol(deltaTime) {
+        if (this.patrolPoints.length === 0) return;
+        const target = this.patrolPoints[this.currentPatrolIndex];
+        this.moveTowards(target, CONFIG.ALIEN_BASE_SPEED, deltaTime);
+        
+        const distance = Math.sqrt(
+            Math.pow(this.position.x - target.x, 2) +
+            Math.pow(this.position.z - target.z, 2)
+        );
+        
+        if (distance < 0.5) {
+            this.currentPatrolIndex = (this.currentPatrolIndex + 1) % this.patrolPoints.length;
+        }
+    }
+
+    investigate(deltaTime) {
+        if (this.lastSeenPlayerPos) {
+            this.moveTowards(this.lastSeenPlayerPos, CONFIG.ALIEN_BASE_SPEED * 1.5, deltaTime);
+            const distance = Math.sqrt(
+                Math.pow(this.position.x - this.lastSeenPlayerPos.x, 2) +
+                Math.pow(this.position.z - this.lastSeenPlayerPos.z, 2)
+            );
+            
+            if (distance < 1) {
+                this.suspicionLevel -= 0.1 * deltaTime;
+                if (this.suspicionLevel <= 0) {
+                    this.state = 'patrol';
+                    this.lastSeenPlayerPos = null;
+                }
+            }
+        }
+    }
+
+    chase(deltaTime) {
+        const playerPos = this.player.position;
+        this.lastSeenPlayerPos = { x: playerPos.x, y: playerPos.y, z: playerPos.z };
+        this.moveTowards(playerPos, CONFIG.ALIEN_CHASE_SPEED, deltaTime);
+        
+        // Learn player's escape routes
+        this.learningData.playerRoutes.push({ ...playerPos, timestamp: Date.now() });
+    }
+
+    hunt(deltaTime) {
+        // Predict player location based on learned patterns
+        const predictedPos = this.predictPlayerLocation();
+        if (predictedPos) {
+            this.moveTowards(predictedPos, CONFIG.ALIEN_CHASE_SPEED * 1.2, deltaTime);
+        }
+    }
+
+    checkPlayerDetection() {
+        const playerPos = this.player.position;
+        const distance = Math.sqrt(
+            Math.pow(this.position.x - playerPos.x, 2) +
+            Math.pow(this.position.z - playerPos.z, 2)
+        );
+
+        // Visual detection
+        if (distance < this.detectionRadius && !gameState.isHiding) {
+            if (Math.random() > CONFIG.HIDING_DETECTION_CHANCE) {
+                this.state = 'chase';
+                this.suspicionLevel = 100;
+                gameState.playerFear = Math.min(100, gameState.playerFear + 10);
+            }
+        }
+
+        // Audio detection
+        if (distance < this.hearingRadius && gameState.isSprinting) {
+            this.state = 'investigate';
+            this.lastSeenPlayerPos = { ...playerPos };
+            this.suspicionLevel = Math.min(100, this.suspicionLevel + 30);
+        }
+    }
+
+    learnFromPlayer() {
+        // Track player hiding spots
+        if (gameState.isHiding) {
+            const playerPos = this.player.position;
+            this.learningData.playerHidingSpots.push({ 
+                ...playerPos, 
+                timestamp: Date.now() 
+            });
+        }
+
+        // Analyze behavior patterns
+        if (this.learningData.playerRoutes.length > 50) {
+            // Advanced ML-like pattern recognition would go here
+            this.state = 'hunt';
+        }
+    }
+
+    predictPlayerLocation() {
+        if (this.learningData.playerRoutes.length < 5) return null;
+        
+        // Simple prediction based on last known positions
+        const recent = this.learningData.playerRoutes.slice(-5);
+        const avgX = recent.reduce((sum, p) => sum + p.x, 0) / recent.length;
+        const avgZ = recent.reduce((sum, p) => sum + p.z, 0) / recent.length;
+        
+        return { x: avgX, y: 1, z: avgZ };
+    }
+
+    moveTowards(target, speed, deltaTime) {
+        const dx = target.x - this.position.x;
+        const dz = target.z - this.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        
+        if (distance > 0.1) {
+            this.velocity.x = (dx / distance) * speed;
+            this.velocity.z = (dz / distance) * speed;
+        }
+    }
+
+    updatePosition(deltaTime) {
+        this.position.x += this.velocity.x * deltaTime;
+        this.position.z += this.velocity.z * deltaTime;
+        
+        if (this.mesh) {
+            this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+        }
+        
+        // Damping
+        this.velocity.x *= 0.9;
+        this.velocity.z *= 0.9;
+    }
+
+    setPatrolPoints(points) {
+        this.patrolPoints = points;
+    }
+}
+
+let alienAI = null;
+
+
+// ===== NPC DIALOGUE SYSTEM =====
+class NPCDialogueSystem {
+    constructor() {
+        this.dialogues = new Map();
+        this.currentDialogue = null;
+        this.dialogueUI = null;
+        this.createUI();
+    }
+
+    createUI() {
+        this.dialogueUI = document.createElement('div');
+        this.dialogueUI.id = 'dialogue-ui';
+        this.dialogueUI.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            color: #00ff00;
+            font-family: monospace;
+            display: none;
+            z-index: 1000;
+        `;
+        document.body.appendChild(this.dialogueUI);
+    }
+
+    addDialogue(npcId, dialogueTree) {
+        this.dialogues.set(npcId, dialogueTree);
+    }
+
+    showDialogue(npcId, nodeId = 'start') {
+        const dialogueTree = this.dialogues.get(npcId);
+        if (!dialogueTree) return;
+
+        const node = dialogueTree[nodeId];
+        if (!node) return;
+
+        this.currentDialogue = { npcId, nodeId };
+        this.dialogueUI.innerHTML = `
+            <p style="margin-bottom: 15px; font-size: 14px;">${node.text}</p>
+            ${node.choices.map((choice, index) => `
+                <button onclick="npcDialogueSystem.selectChoice(${index})" style="
+                    display: block;
+                    width: 100%;
+                    margin: 5px 0;
+                    padding: 10px;
+                    background: rgba(0, 255, 0, 0.1);
+                    border: 1px solid #00ff00;
+                    color: #00ff00;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    font-family: monospace;
+                ">${choice.text}</button>
+            `).join('')}
+        `;
+        this.dialogueUI.style.display = 'block';
+    }
+
+    selectChoice(choiceIndex) {
+        if (!this.currentDialogue) return;
+
+        const dialogueTree = this.dialogues.get(this.currentDialogue.npcId);
+        const node = dialogueTree[this.currentDialogue.nodeId];
+        const choice = node.choices[choiceIndex];
+
+        if (choice.action) {
+            choice.action();
+        }
+
+        if (choice.next) {
+            this.showDialogue(this.currentDialogue.npcId, choice.next);
+        } else {
+            this.hideDialogue();
+        }
+    }
+
+    hideDialogue() {
+        this.dialogueUI.style.display = 'none';
+        this.currentDialogue = null;
+    }
+}
+
+let npcDialogueSystem = new NPCDialogueSystem();
+
+// ===== HUD SYSTEM =====
+class HUDSystem {
+    constructor() {
+        this.createHUD();
+    }
+
+    createHUD() {
+        // Health Bar
+        const healthBar = document.createElement('div');
+        healthBar.id = 'health-bar';
+        healthBar.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            overflow: hidden;
+        `;
+        healthBar.innerHTML = '<div id="health-fill" style="height: 100%; background: #ff0000; width: 100%; transition: width 0.3s;"></div>';
+        document.body.appendChild(healthBar);
+
+        // Fear Meter
+        const fearMeter = document.createElement('div');
+        fearMeter.id = 'fear-meter';
+        fearMeter.style.cssText = `
+            position: fixed;
+            top: 50px;
+            left: 20px;
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 255, 0, 0.3);
+            border: 2px solid #ffff00;
+            border-radius: 10px;
+            overflow: hidden;
+        `;
+        fearMeter.innerHTML = '<div id="fear-fill" style="height: 100%; background: #ffff00; width: 0%; transition: width 0.3s;"></div>';
+        document.body.appendChild(fearMeter);
+
+        // Fragment Counter
+        const fragmentCounter = document.createElement('div');
+        fragmentCounter.id = 'fragment-counter';
+        fragmentCounter.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            text-shadow: 0 0 10px #00ff00;
+        `;
+        fragmentCounter.textContent = 'Fragments: 0/8';
+        document.body.appendChild(fragmentCounter);
+
+        // Zone Indicator
+        const zoneIndicator = document.createElement('div');
+        zoneIndicator.id = 'zone-indicator';
+        zoneIndicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #00ffff;
+            font-family: monospace;
+            font-size: 18px;
+            text-shadow: 0 0 10px #00ffff;
+        `;
+        zoneIndicator.textContent = 'Zone 1: Modern District';
+        document.body.appendChild(zoneIndicator);
+
+        // Status Messages
+        const statusMessages = document.createElement('div');
+        statusMessages.id = 'status-messages';
+        statusMessages.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 14px;
+            text-align: center;
+            text-shadow: 0 0 5px #000000;
+        `;
+        document.body.appendChild(statusMessages);
+    }
+
+    update() {
+        // Update health bar
+        const healthFill = document.getElementById('health-fill');
+        if (healthFill) {
+            healthFill.style.width = `${gameState.playerHealth}%`;
+        }
+
+        // Update fear meter
+        const fearFill = document.getElementById('fear-fill');
+        if (fearFill) {
+            fearFill.style.width = `${gameState.playerFear}%`;
+        }
+
+        // Update fragment counter
+        const fragmentCounter = document.getElementById('fragment-counter');
+        if (fragmentCounter) {
+            fragmentCounter.textContent = `Fragments: ${gameState.fragmentsCollected}/${CONFIG.MAX_FRAGMENTS}`;
+        }
+
+        // Update zone indicator
+        const zoneIndicator = document.getElementById('zone-indicator');
+        if (zoneIndicator) {
+            const zoneNames = {
+                1: 'Zone 1: Modern District',
+                2: 'Zone 2: Ancient Ruins',
+                3: 'Zone 3: Corrupted Lab',
+                4: 'Zone 4: Void Nexus'
+            };
+            zoneIndicator.textContent = zoneNames[gameState.currentZone] || 'Unknown Zone';
+        }
+    }
+
+    showMessage(message, duration = 3000) {
+        const statusMessages = document.getElementById('status-messages');
+        if (statusMessages) {
+            statusMessages.textContent = message;
+            statusMessages.style.opacity = '1';
+            setTimeout(() => {
+                statusMessages.style.opacity = '0';
+            }, duration);
+        }
+    }
+}
+
+let hudSystem = new HUDSystem();
+
+
 // ===== START GAME =====
 window.addEventListener('load', () => {
     initGame();
