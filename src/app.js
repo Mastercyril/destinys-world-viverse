@@ -71,6 +71,9 @@ let gameState = {
     audioDistortion: 0
 };
 
+// ===== KEYBOARD INPUT =====
+const keys = { w: false, a: false, s: false, d: false };
+
 // ===== THREE.JS SCENE SETUP =====
 let scene, camera, renderer, player, alienKiller;, particleSystem
 let clock = new THREE.Clock();
@@ -1122,7 +1125,6 @@ async function initGame() {
     }, 2000);
 
         // Set up keyboard controls for player movement
-        const keys = { w: false, a: false, s: false, d: false };
 
         document.addEventListener('keydown', (e) => {
                     if (e.key === 'w' || e.key === 'W') keys.w = true;
