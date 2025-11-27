@@ -75,7 +75,7 @@ let gameState = {
 const keys = { w: false, a: false, s: false, d: false };
 
 // ===== THREE.JS SCENE SETUP =====
-let scene, camera, renderer, player, alienKille,, particleSystem
+let scene, camera, renderer, player, alienKiller, particleSystem
 let clock = new THREE.Clock();
 
 function initThreeJS() {
