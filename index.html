@@ -79,6 +79,19 @@
         <h2>Investigation Journal</h2>
         <div id="journal-content"></div>
     </div>
-       <script type="module" src="./src/app.js"></script>
+        <script>
+        // Simple initialization test
+        window.addEventListener('load', () => {
+            console.log('Page loaded!');
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                    console.log('Loading screen hidden');
+                }
+            }, 2000);
+        });
+    </script>   
+    <script type="module" src="./src/app.js"></script>
 </body>
 </html>
