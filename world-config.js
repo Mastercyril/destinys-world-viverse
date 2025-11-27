@@ -55,7 +55,8 @@ export const WORLD_CONFIG = {
         npcs: [
             { id: 'hacker_ally', type: 'FRIENDLY', pos: { x: 105, y: 5, z: -5 }, dialogueId: 'hacker_intro' },
             { id: 'glitch_bot', type: 'HOSTILE', pos: { x: 90, y: 5, z: 5 }, behavior: 'CHASE' },
-            { id: 'glitch_bot_2', type: 'HOSTILE', pos: { x: 110, y: 0, z: 20 }, behavior: 'PATROL' }
+            { id: 'glitch_bot_2', type: 'HOSTILE', pos: { x: 110, y: 0, z: 20 }, behavior: 'PATROL' },
+      { id: 'corp_sec_drone', type: 'HOSTILE', pos: { x: 115, y: 5, z: -10 }, behavior: 'PATROL' }
         ],
         items: [
             { id: 'frag_2', type: 'FRAGMENT', pos: { x: 100, y: 41, z: -30 } }, // Top of tower (Parkour challenge)
@@ -81,7 +82,9 @@ export const WORLD_CONFIG = {
         ],
         npcs: [
             { id: 'cultist_leader', type: 'HOSTILE', pos: { x: 200, y: 0, z: 18 }, behavior: 'STATIONARY_ATTACK' },
-            { id: 'lost_explorer', type: 'NEUTRAL', pos: { x: 185, y: 0, z: -5 }, dialogueId: 'explorer_warning' }
+            { id: 'lost_explorer', type: 'NEUTRAL', pos: { x: 185, y: 0, z: -5 }, dialogueId: 'explorer_warning' },
+      { id: 'corrupted_scholar', type: 'NEUTRAL', pos: { x: 195, y: 0, z: 5 }, behavior: 'WANDER', dialogueId: 'scholar_riddles' },
+      { id: 'stone_sentinel', type: 'HOSTILE', pos: { x: 210, y: 0, z: -15 }, behavior: 'GUARD' }
         ],
         items: [
             { id: 'frag_3', type: 'FRAGMENT', pos: { x: 200, y: 2, z: 20 } } // On the altar (Trap!)
@@ -105,7 +108,9 @@ export const WORLD_CONFIG = {
             { type: 'CORE', pos: { x: 300, y: 20, z: 40 }, scale: { x: 5, y: 5, z: 5 }, color: 0xFFD700 } // Final Goal
         ],
         npcs: [
-            { id: 'boss_entity', type: 'BOSS', pos: { x: 300, y: 20, z: 35 }, behavior: 'BOSS_PATTERN' }
+            { id: 'boss_entity', type: 'BOSS', pos: { x: 300, y: 20, z: 35 }, behavior: 'BOSS_PATTERN' },
+      { id: 'void_echo_1', type: 'HOSTILE', pos: { x: 295, y: 12, z: 10 }, behavior: 'CHASE' },
+      { id: 'timeless_observer', type: 'NEUTRAL', pos: { x: 305, y: 18, z: -5 }, behavior: 'FLOAT', dialogueId: 'observer_prophecy' }
         ],
         items: [
             { id: 'final_frag', type: 'FRAGMENT', pos: { x: 300, y: 20, z: 40 } }
