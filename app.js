@@ -2,9 +2,11 @@
 // Complete Game Implementation with AI, NPCs, and 4 Zones
 import { WORLD_CONFIG } from './world-config.js';
 // Author: Joseph Cyril Dougherty IV
+import { LevelBuilder } from './LevelBuilder.js';
 
 // ===== GAME CONFIGURATION =====
 const CONFIG = {
+
     PERPLEXITY_API_KEY: 'YOUR_PERPLEXITY_API_KEY',
     PERPLEXITY_API_URL: 'https://api.perplexity.ai/chat/completions',
     MAX_FRAGMENTS: 8,
