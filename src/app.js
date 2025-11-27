@@ -862,41 +862,6 @@ function getZoneName() {
     return names[gameState.currentZone - 1] || 'Unknown';
 }
 
-// ===== INPUT HANDLING =====
-const keys = {};
-
-document.addEventListener('keydown', (e) => {
-    keys[e.key.toLowerCase()] = true;
-    
-    // Hide/unhide
-    if (e.key.toLowerCase() === 'e') {
-        hidePlayer();
-    }
-    
-    // Sprint
-    if (e.key === 'Shift') {
-        gameState.isSprinting = true;
-        gameState.playerFear += 0.1;
-    }
-    
-    // Crouch
-    if (e.key.toLowerCase() === 'c') {
-        gameState.isCrouching = !gameState.isCrouching;
-    }
-    
-    // Pause
-    if (e.key === 'Escape') {
-        togglePause();
-    }
-});
-
-document.addEventListener('keyup', (e) => {
-    keys[e.key.toLowerCase()] = false;
-    
-    if (e.key === 'Shift') {
-        gameState.isSprinting = false;
-    }
-});
 
 function togglePause() {
     const pauseMenu = document.getElementById('pause-menu');
