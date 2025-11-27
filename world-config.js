@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 /**
  * WorldData
  * Contains the spatial layout, NPC spawns, and Item locations for all 4 Zones.
