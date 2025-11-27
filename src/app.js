@@ -80,7 +80,8 @@ let clock = new THREE.Clock();
 
 function initThreeJS() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.015);
+    scene.fog = new THREE.FogExp2(0x111111, 0.015);
+        scene.background = new THREE.Color(0x111111); // Visible dark grey background
     
     // Camera setup
     camera = new THREE.PerspectiveCamera(
@@ -101,8 +102,18 @@ function initThreeJS() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+    const ambientLight = new THREE.AmbientLight(0x22222); // Dim dark grey
     scene.add(ambientLight);
+
+        // Flashlight (SpotLight) attached to camera
+    const flashlight = new THREE.SpotLight(0xffffff, 2.0, 40, Math.PI/4, 0.5, 1);
+    flashlight.position.set(0, 0, 0);
+    flashlight.target.position.set(0, 0, -1); // Points where camera looks
+    camera.add(flashlight);
+    camera.add(flashlight.target);
+    
+    // CRITICAL: Add camera to scene (required for child lights to work)
+    scene.add(camera);
     
     // Player
     const playerGeometry = new THREE.CapsuleGeometry(0.5, 1.6, 4, 8);
