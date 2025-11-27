@@ -90,11 +90,13 @@ function initThreeJS() {
         0.1,
         1000
     );
-    camera.position.set(0, 1.6, 5);
+    camera.position.set(0, 1.7, 5);
+        camera.lookAt(0, 1.7, 0); // Explicitly point camera at origin
     
     // Renderer setup
     renderer = new THREE.WebGLRenderer({
         canvas: document.getElementById('game-canvas'),
+        
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -104,6 +106,14 @@ function initThreeJS() {
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x22222); // Dim dark grey
     scene.add(ambientLight);
+
+        // --- DEBUG CUBE START ---
+        const debugGeo = new THREE.BoxGeometry(1, 1, 1);
+        const debugMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const debugCube = new THREE.Mesh(debugGeo, debugMat);
+        debugCube.position.set(0, 1.7, -3);
+        scene.add(debugCube);
+        // --- DEBUG CUBE END ---
 
         // Flashlight (SpotLight) attached to camera
     const flashlight = new THREE.SpotLight(0xffffff, 2.0, 40, Math.PI/4, 0.5, 1);
@@ -1008,6 +1018,7 @@ function updateHUDDisplay() {
 // ===== GAME LOOP =====
 function animate() {
     requestAnimationFrame(animate);
+        console.log("Rendering..."); // DEBUG: Check if animate loop is running
     
     const delta = clock.getDelta();
     
