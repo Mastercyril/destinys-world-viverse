@@ -89,7 +89,7 @@ function initThreeJS() {
         0.1,
         1000
     );
-    camera.position.set(0, 1.6, 0);
+    camera.position.set(0, 1.6, 5);
     
     // Renderer setup
     renderer = new THREE.WebGLRenderer({
