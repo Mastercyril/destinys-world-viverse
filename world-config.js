@@ -28,6 +28,7 @@ export const WORLD_CONFIG = {
             { id: 'npc_citizen_1', type: 'FRIENDLY', pos: { x: -12, y: 0, z: 12 }, dialogueId: 'cafe_gossip' },
             { id: 'npc_officer', type: 'NEUTRAL', pos: { x: 5, y: 0, z: -10 }, dialogueId: 'police_warning' },
             { id: 'shadow_scout', type: 'HOSTILE', pos: { x: 25, y: 0, z: 25 }, behavior: 'PATROL' } // First encounter
+            { id: 'npc_vendor_max', type: 'FRIENDLY', pos: { x: -8, y: 0, z: -5 }, behavior: 'IDLE', dialogueId: 'vendor_shop' },
         ],
         items: [
             { id: 'frag_1', type: 'FRAGMENT', pos: { x: -15, y: 1, z: 10 } }, // Inside Cafe
