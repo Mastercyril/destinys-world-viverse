@@ -1120,6 +1120,23 @@ async function initGame() {
         updateHUD();
         animate();
     }, 2000);
+
+        // Set up keyboard controls for player movement
+        const keys = { w: false, a: false, s: false, d: false };
+
+        document.addEventListener('keydown', (e) => {
+                    if (e.key === 'w' || e.key === 'W') keys.w = true;
+                    if (e.key === 's' || e.key === 'S') keys.s = true;
+                    if (e.key === 'a' || e.key === 'A') keys.a = true;
+                    if (e.key === 'd' || e.key === 'D') keys.d = true;
+                });
+
+        document.addEventListener('keyup', (e) => {
+                    if (e.key === 'w' || e.key === 'W') keys.w = false;
+                    if (e.key === 's' || e.key === 'S') keys.s = false;
+                    if (e.key === 'a' || e.key === 'A') keys.a = false;
+                    if (e.key === 'd' || e.key === 'D') keys.d = false;
+                });
 }
 
 function gameOver() {
