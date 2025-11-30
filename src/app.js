@@ -80,8 +80,8 @@ let clock = new THREE.Clock();
 
 function initThreeJS() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x111111, 0.015);
-        scene.background = new THREE.Color(0x111111); // Visible dark grey background
+    scene.fog = new THREE.FogExp2(0x333333, 0.015);
+        scene.background = new THREE.Color(0x333333); // Visible dark grey background
     
     // Camera setup
     camera = new THREE.PerspectiveCamera(
@@ -104,16 +104,16 @@ function initThreeJS() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x22222); // Dim dark grey
+    const ambientLight = new THREE.AmbientLight(0x222222); // Dim dark grey
     scene.add(ambientLight);
 
-        // --- DEBUG CUBE START ---
+        /*// --- DEBUG CUBE START ---
         const debugGeo = new THREE.BoxGeometry(1, 1, 1);
         const debugMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const debugCube = new THREE.Mesh(debugGeo, debugMat);
         debugCube.position.set(0, 1.7, -3);
         scene.add(debugCube);
-        // --- DEBUG CUBE END ---
+        // --- DEBUG CUBE END --- */
 
         // Flashlight (SpotLight) attached to camera
     const flashlight = new THREE.SpotLight(0xffffff, 2.0, 40, Math.PI/4, 0.5, 1);
