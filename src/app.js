@@ -134,6 +134,7 @@ function initThreeJS() {
     scene.add(player);
     
     window.addEventListener('resize', onWindowResize)
+        createZone1(); // Initialize the game world
             animate(); // Start the animation loop;
 }
 
