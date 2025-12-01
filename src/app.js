@@ -80,8 +80,8 @@ let clock = new THREE.Clock();
 
 function initThreeJS() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x333333, 0.015);
-        scene.background = new THREE.Color(0x333333); // Visible dark grey background
+    scene.fog = new THREE.FogExp2(0x87CEEB, 0.015);
+        scene.background = new THREE.Color(0x87CEEB); // Visible dark grey background
     
     // Camera setup
     camera = new THREE.PerspectiveCamera(
@@ -104,8 +104,7 @@ function initThreeJS() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Dim dark grey
-    scene.add(ambientLight);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0); // Bright sunny day    scene.add(ambientLight);
 107
         /*// --- DEBUG CUBE START ---
         const debugGeo = new THREE.BoxGeometry(1, 1, 1);
@@ -157,7 +156,7 @@ function createZone1() {
     // Ground
     const groundGeometry = new THREE.PlaneGeometry(100, 100);
     const groundMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x333333,
+        color: 0x87CEEB,
         roughness: 0.8
     });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -170,8 +169,7 @@ function createZone1() {
         const height = Math.random() * 20 + 10;
         const buildingGeometry = new THREE.BoxGeometry(8, height, 8);
         const buildingMaterial = new THREE.MeshStandardMaterial({
-            color: 0x444444,
-            roughness: 0.7,
+            color: 0xFFFFFF,            roughness: 0.7,
             metalness: 0.3
         });
         const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
