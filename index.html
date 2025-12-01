@@ -1,97 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Destiny's World - Lost Society in Time</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Destiny's Viverse World</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
     <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-    </script></head>
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loading-content">
-            <h1>Destiny's World</h1>
-            <h2>Lost Society in Time</h2>
-            <div class="loading-bar">
-                <div class="loading-progress" id="loading-progress"></div>
-            </div>
-            <p>Initializing VIVERSE...</p>
-        </div>
-    </div>
-
-    <!-- Game Canvas -->
-    <canvas id="game-canvas"></canvas>
-
-    <!-- HUD Elements -->
-    <div id="hud">
-        <div id="health-bar" class="hud-element">
-            <div>Health</div>
-            <div class="bar">
-                <div class="bar-fill" id="health-fill"></div>
-            </div>
-        </div>
-
-        <!-- Fear Meter -->
-        <div id="fear-meter" class="hud-element">
-            <div>Fear</div>
-            <div class="bar">
-                <div class="bar-fill" id="fear-fill"></div>
-            </div>
-        </div>
-
-        <!-- Sanity Meter -->
-        <div id="sanity-meter" class="hud-element">
-            <div>Sanity</div>
-            <div class="bar">
-                <div class="bar-fill" id="sanity-fill" style="background: linear-gradient(90deg, #4a90e2 0%, #00ffff 100%);"></div>
-            </div>
-        </div>
-
-        <div id="fragment-counter" class="hud-element">
-            <span>Fragments: <strong id="fragment-count">0</strong>/8</span>
-        </div>
-
-        <div id="zone-indicator" class="hud-element">
-            <span id="zone-name">Zone 1: Modern District</span>
-        </div>
-
-        <div id="interaction-prompt" style="display:none;">
-            Press <kbd>E</kbd> to interact
-        </div>
-    </div>
-
-    <!-- Pause Menu -->
-    <div id="pause-menu" style="display:none;">
-        <h2>Paused</h2>
-        <button onclick="resumeGame()">Resume</button>
-        <button onclick="location.reload()">Restart</button>
-    </div>
-
-    <!-- Journal/Inventory -->
-    <div id="journal" style="display:none;">
-        <h2>Investigation Journal</h2>
-        <div id="journal-content"></div>
-    </div>
-        <script>
-        // Simple initialization test
-        window.addEventListener('load', () => {
-            console.log('Page loaded!');
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.style.display = 'none';
-                    console.log('Loading screen hidden');
-                }
-            }, 2000);
-        });
-    </script>   
-    <script type="module" src="./src/app.js"></script>
+    <script type="module" src="./game_orchestra.js"></script>
 </body>
 </html>
