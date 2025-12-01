@@ -80,12 +80,9 @@ let clock = new THREE.Clock();
 
 function initThreeJS() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x87CEEB, 0.015);
         scene.background = new THREE.Color(0x87CEEB); // Visible dark grey background
     
     // Camera setup
-    camera = new THREE.PerspectiveCamera(
-        75,
         window.innerWidth / window.innerHeight,
         0.1,
         1000
