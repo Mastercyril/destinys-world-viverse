@@ -104,7 +104,7 @@ function initThreeJS() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff), 2.0; // Dim dark grey
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0); // Dim dark grey
     scene.add(ambientLight);
 107
         /*// --- DEBUG CUBE START ---
