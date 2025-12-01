@@ -133,13 +133,20 @@ function initThreeJS() {
     player.castShadow = true;
     scene.add(player);
     
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('resize', onWindowResize)
+            animate(); // Start the animation loop;
 }
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
 }
 
 // ===== ZONE 1: MODERN DISTRICT =====
