@@ -3,6 +3,20 @@
   "version": "1.0.0",
   "description": "Destiny's World - Lost Society in Time. A 3D investigation game for VIVERSE",
   "type": "module",
+    "main": "src/app.js",
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/Mastercyril/destinys-world-viverse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mastercyril/destinys-world-viverse/issues"
+  },
+  "homepage": "https://mastercyril.github.io/destinys-world-viverse/",
+  "files": [
+    "src/",
+    "index.html",
+    "README.md"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
