@@ -80,8 +80,7 @@ let clock = new THREE.Clock();
 
 function initThreeJS() {
     scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB); // Visible dark grey background
-    
+    scene.background = new THREE.Color(0x1a1a1a); // Dark horror atmosphere for mental hospital    
     // Camera setup
         window.innerWidth / window.innerHeight,
         0.1,
@@ -146,14 +145,35 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// ===== ZONE 1: MODERN DISTRICT =====
+// ===== ZONE 1: MENTAL HOSPITAL =====
 function createZone1() {
-    console.log('Creating Zone 1: Modern District');
+    console.log('Creating Zone 1: Mental Hospital - Destiny\'s World Begins');
+
+        // ===== OPENING CUTSCENE: DESTINY'S STORY =====
+    // Display opening narrative before game starts
+    const openingText = [
+        "Detective Destiny - Former Investigator",
+        "Three months ago, I tried to warn them...",
+        "The serial killer wasn't human. It was something else.",
+        "An alien that feeds on humans, hiding in plain sight.",
+        "But they didn't believe me. They never do.",
+        "Now I'm here... locked in Ravenswood Mental Hospital.",
+        "They think I'm insane. They think I imagined it all.",
+        "But I know the truth. And I'm going to prove it.",
+        "The creature is still out there... hunting.",
+        "I need to escape. I need to find evidence.",
+        "This is where Destiny's World begins..."
+    ];
+    
+    // TODO: Display cutscene text on screen with fade in/out
+    console.log('=== OPENING CUTSCENE ===');
+    openingText.forEach(line => console.log(line));
+    console.log('========================');
     
     // Ground
     const groundGeometry = new THREE.PlaneGeometry(100, 100);
     const groundMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x87CEEB,
+        color: 0x3D3D3D,
         roughness: 0.8
     });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -161,12 +181,11 @@ function createZone1() {
     ground.receiveShadow = true;
     scene.add(ground);
     
-    // Buildings
-    for (let i = 0; i < 15; i++) {
+    // Hospital Corridors and Rooms    for (let i = 0; i < 15; i++) {
         const height = Math.random() * 20 + 10;
         const buildingGeometry = new THREE.BoxGeometry(8, height, 8);
         const buildingMaterial = new THREE.MeshStandardMaterial({
-            color: 0xFFFFFF,            roughness: 0.7,
+            color: 0x9FAFA8,            roughness: 0.7,
             metalness: 0.3
         });
         const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
@@ -180,8 +199,7 @@ function createZone1() {
         scene.add(building);
     }
     
-    // Streetlights
-    for (let i = 0; i < 20; i++) {
+    // Flickering Hospital Fluorescent Lights (like RedGlimmer)    for (let i = 0; i < 20; i++) {
         const light = new THREE.PointLight(0xffaa00, 1, 10);
         light.position.set(
             (Math.random() - 0.5) * 90,
@@ -192,11 +210,10 @@ function createZone1() {
         scene.add(light);
     }
     
-    // Hiding spots
-    createHidingSpots([
+    // Hospital Hiding Spots (patient rooms, supply closets, under beds)    createHidingSpots([
         { x: -10, y: 0, z: -10, type: 'locker' },
-        { x: 15, y: 0, z: -20, type: 'dumpster' },
-        { x: -25, y: 0, z: 30, type: 'alley' }
+        { x: 15, y: 0, z: -20, type: 'patient_bed' },
+        { x: -25, y: 0, z: 30, type: 'supply_closet' }
     ]);
     
     // Fragments
