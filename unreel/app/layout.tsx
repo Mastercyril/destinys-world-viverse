@@ -3,25 +3,15 @@ import { Inter } from "next/font/google";
 import { BRAND, BRAND_TAGLINE } from "@/lib/brand";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: BRAND,
-  description: `${BRAND_TAGLINE} A streaming showcase with live-rendered discovery.`,
+  title: `${BRAND} | VIVERSE`,
+  description: `${BRAND_TAGLINE}. Explore four zones, temporal fragments, and the alien AI.`,
 };
 
-export const viewport: Viewport = {
-  themeColor: "#0b0b0f",
-};
+export const viewport: Viewport = { themeColor: "#0a0a0f" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" className={inter.variable}>
-      <body>{children}</body>
-    </html>
-  );
+  return <html lang="en" className={inter.variable}><body>{children}</body></html>;
 }

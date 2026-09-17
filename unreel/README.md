@@ -1,8 +1,8 @@
-# UNREEL app added to the repo
+# Destiny's World UNREEL app
 
-This repository now contains a standalone Next.js app under the `unreel/` directory.
+The `unreel/` directory is now branded for Destiny's World and uses the repository's four VIVERSE zones as its catalog.
 
-## Run it
+## Local development
 
 ```bash
 cd unreel
@@ -10,10 +10,14 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:3000
+## Vercel deployment
 
-## Notes
+Create a Vercel project from this GitHub repository and set **Root Directory** to `unreel`. Vercel will detect Next.js and use `unreel/vercel.json`.
 
-- It preserves the existing `destinys-world-viverse` project in the root repo.
-- The UNREEL app is isolated in its own folder to avoid breaking the current Three.js game.
-- It is intentionally lightweight and uses sample media so it can run immediately without extra assets.
+The catalog API is available at `/api/catalog` and returns the zone/title data used by the UI.
+
+## Assets
+
+The app uses local artwork in `unreel/public/destiny-assets/`. If you add real VIVERSE media, place it in `unreel/public/assets/video/` and set the matching `preview` path in `unreel/lib/catalog.ts`.
+
+The existing root `assets/` directory currently contains documentation but no binary models, textures, audio, or video files, so no external game files were copied or invented.

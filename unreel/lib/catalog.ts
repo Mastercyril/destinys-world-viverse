@@ -8,127 +8,51 @@ export type Title = {
   rating: string;
   mode: "story" | "chaos";
   featured?: boolean;
+  zone: number;
 };
 
 export type ManifestEntry = {
   cover: string;
-  preview: string;
+  preview?: string;
   title: string;
   poster?: string;
 };
 
-export type Row = {
-  id: string;
-  label: string;
-  live?: boolean;
-  ids: string[];
-};
+export type Row = { id: string; label: string; live?: boolean; ids: string[] };
 
 export const TITLES: Title[] = [
-  {
-    id: "meridian-drift",
-    title: "Meridian Drift",
-    tagline: "The distress call is in her own voice.",
-    logline: "A salvage pilot boards a derelict ship and finds a log recorded in her own voice, three days from now.",
-    genres: ["Sci-Fi", "Mystery"],
-    year: 2026,
-    rating: "13+",
-    mode: "story",
-    featured: true,
-  },
-  {
-    id: "neon-vespers",
-    title: "Neon Vespers",
-    tagline: "Every choir needs a missing voice.",
-    logline: "A detective hunts a missing android singer through a rain-soaked megacity and the cathedral wants her back before dawn.",
-    genres: ["Noir", "Cyberpunk"],
-    year: 2026,
-    rating: "16+",
-    mode: "story",
-  },
-  {
-    id: "salt-and-sundown",
-    title: "Salt & Sundown",
-    tagline: "The railroad is coming. So is she.",
-    logline: "A widowed sheriff protects a frontier town from a railroad baron as the sun falls on the salt flats.",
-    genres: ["Western", "Drama"],
-    year: 2026,
-    rating: "13+",
-    mode: "story",
-  },
-  {
-    id: "hollow-creek",
-    title: "Hollow Creek",
-    tagline: "The festival needs one more guest.",
-    logline: "A journalist returns to a town where her name is already carved into a ritual effigy.",
-    genres: ["Horror", "Folk"],
-    year: 2026,
-    rating: "16+",
-    mode: "story",
-  },
-  {
-    id: "capybara-news",
-    title: "Capybara News Network",
-    tagline: "The most trusted grass-eating newsroom in the multiverse.",
-    logline: "A live news channel where the anchors are capybaras and the stories get stranger by the minute.",
-    genres: ["Comedy", "Live"],
-    year: 2026,
-    rating: "TV-14",
-    mode: "chaos",
-  },
-  {
-    id: "goblin-tax-season",
-    title: "Goblin Tax Season",
-    tagline: "Nothing is taxable, but everything is personal.",
-    logline: "A goblin bureaucracy turns fiscal collapse into absurdist comedy and a very aggressive public hearing.",
-    genres: ["Comedy", "Live"],
-    year: 2026,
-    rating: "TV-MA",
-    mode: "chaos",
-  },
-  {
-    id: "toaster-court",
-    title: "Toaster Court",
-    tagline: "Justice is served at 1200 watts.",
-    logline: "An absurd legal show where appliances argue their own constitutional rights in real time.",
-    genres: ["Comedy", "Live"],
-    year: 2026,
-    rating: "TV-14",
-    mode: "chaos",
-  },
+  { id: "modern-district", title: "Modern District", tagline: "The city remembers what time erased.", logline: "Investigate the decaying district, gather temporal fragments, and survive the first signs of the alien hunter.", genres: ["Investigation", "Horror"], year: 2026, rating: "13+", mode: "story", featured: true, zone: 1 },
+  { id: "transition-zone", title: "Transition Zone", tagline: "Reality begins to distort.", logline: "Cross the corrupted boundary where weather, memory, and the geometry of the world stop obeying the rules.", genres: ["Sci-Fi", "Survival"], year: 2026, rating: "13+", mode: "story", zone: 2 },
+  { id: "dark-corrupted-area", title: "Dark Corrupted Area", tagline: "The fragments whisper below the ruins.", logline: "Search ancient ruins while hostile creatures and corrupted scholars guard the next pieces of the Shattered Chronos.", genres: ["Dark Fantasy", "Adventure"], year: 2026, rating: "16+", mode: "story", zone: 3 },
+  { id: "final-corruption-zone", title: "Final Corruption Zone", tagline: "Every timeline ends here.", logline: "Reach the Ethereal Void, face the boss entity, and choose whether to repair, shatter, or accept the loop.", genres: ["Cosmic Horror", "Finale"], year: 2026, rating: "16+", mode: "story", zone: 4 },
+  { id: "alien-killer-files", title: "Alien Killer Files", tagline: "It is not human. It is still hunting.", logline: "A live evidence channel assembled from Destiny's encounters with the adaptive alien AI.", genres: ["Live", "AI Horror"], year: 2026, rating: "16+", mode: "chaos", zone: 1 },
+  { id: "viverse-world-feed", title: "VIVERSE World Feed", tagline: "The investigation continues between worlds.", logline: "A live channel for world updates, creator drops, and new Destiny's World content.", genres: ["Live", "VIVERSE"], year: 2026, rating: "ALL", mode: "chaos", zone: 1 },
 ];
 
 export const ROWS: Row[] = [
-  { id: "for-you", label: "For You", ids: ["meridian-drift", "neon-vespers", "salt-and-sundown", "hollow-creek"] },
-  { id: "live", label: "Live Channels", live: true, ids: ["capybara-news", "goblin-tax-season", "toaster-court"] },
+  { id: "zones", label: "Explore Destiny's World", ids: ["modern-district", "transition-zone", "dark-corrupted-area", "final-corruption-zone"] },
+  { id: "live", label: "Live Investigation Channels", live: true, ids: ["alien-killer-files", "viverse-world-feed"] },
 ];
 
-const SAMPLE_MEDIA = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+const zoneCover: Record<number, string> = {
+  1: "/destiny-assets/zone-1.svg",
+  2: "/destiny-assets/zone-2.svg",
+  3: "/destiny-assets/zone-3.svg",
+  4: "/destiny-assets/zone-4.svg",
+};
 
-export function featuredTitle() {
-  return TITLES.find((title) => title.featured) ?? TITLES[0];
-}
-
-export function titleById(id: string) {
-  return TITLES.find((title) => title.id === id);
-}
-
-export function mediaUrl(url: string) {
-  return url;
-}
+export function featuredTitle() { return TITLES.find((title) => title.featured) ?? TITLES[0]; }
+export function titleById(id: string) { return TITLES.find((title) => title.id === id); }
+export function mediaUrl(url: string) { return url; }
 
 export async function loadManifest(): Promise<{ titles: Record<string, ManifestEntry> }> {
   return {
-    titles: Object.fromEntries(
-      TITLES.map((title) => [
-        title.id,
-        {
-          cover: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-          preview: SAMPLE_MEDIA,
-          title: title.title,
-        },
-      ])
-    ),
+    titles: Object.fromEntries(TITLES.map((title) => [title.id, {
+      cover: zoneCover[title.zone],
+      title: title.title,
+      // Add a generated MP4/WebM to assets/video/<id>.mp4 when available.
+      preview: undefined,
+    }])),
   };
 }
 
